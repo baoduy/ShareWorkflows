@@ -6,6 +6,9 @@ on:
       dockerFile:
         required: true
         type: string
+      context:
+        default: .
+        type: string
       imageName:
         required: true
         type: string
@@ -94,7 +97,7 @@ jobs:
 
       - name: Build the Docker image
         run: |
-          docker buildx build . --file ${{ inputs.dockerFile }} \
+          docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
             --tag ${{ inputs.imageName }}:${{ inputs.version }} \
             --tag ${{ inputs.imageName }}:latest \
             --cache-from=${{ inputs.imageName }}:latest \
