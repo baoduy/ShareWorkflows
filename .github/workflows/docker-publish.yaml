@@ -75,9 +75,9 @@ jobs:
           ecr: auto
           logout: true
 
-      - name: docker pull cache image
-        continue-on-error: true
-        run: docker pull ${{ inputs.imageName }}:latest
+      #- name: docker pull cache image
+      #  continue-on-error: true
+      #  run: docker pull ${{ inputs.imageName }}:latest
 
       # Create Release
 #      - name: Create Release
