@@ -24,7 +24,7 @@ on:
         type: string
         description: The version of the image with default value is current date-time.
       DOCKER_REGISTRY:
-        default: hub.docker.com
+        default: docker.io
         type: string
         description: The registry image repository.
     secrets:
