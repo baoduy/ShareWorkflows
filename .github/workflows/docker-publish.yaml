@@ -23,6 +23,9 @@ on:
         default: $(date +%s)
         type: string
         description: The version of the image with default value is current date-time.
+      buildArgs:
+        type: string
+        description: Docker build arguments in the format "ARG1=value1,ARG2=value2".
       DOCKER_REGISTRY:
         default: docker.io
         type: string
@@ -68,8 +71,16 @@ jobs:
       # Build and Publish to Docker
       - name: Build the Docker image
         run: |
+          build_args=""
+          if [ -n "${{ inputs.buildArgs }}" ]; then
+            IFS=',' read -ra args <<< "${{ inputs.buildArgs }}"
+            for arg in "${args[@]}"; do
+              build_args+="--build-arg $arg "
+            done
+          fi
+
           docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
             --tag ${{ inputs.imageName }}:${{ inputs.version }} \
             --tag ${{ inputs.imageName }}:latest \
             --cache-from=${{ inputs.imageName }}:latest \
-            --push --platform=${{ inputs.platforms }}
+            --push --platform=${{ inputs.platforms }} $build_args
