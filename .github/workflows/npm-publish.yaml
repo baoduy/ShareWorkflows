@@ -1,0 +1,111 @@
+name: npm-publish
+
+on:
+  workflow_call:
+    inputs:
+      dockerFile:
+        required: true
+        type: string
+        description: The location of the Dockerfile.
+      context:
+        default: .
+        type: string
+        description: The context path of the project.
+      platforms:
+        default: linux/arm64,linux/amd64
+        type: string
+        description: The docker platforms parameter with default value is "linux/arm64 and linux/amd64".
+      imageName:
+        required: true
+        type: string
+        description: The name of the docker image.
+      version:
+        default: $(date +%s)
+        type: string
+        description: The version of the image with default value is current date-time.
+      buildArgs:
+        type: string
+        description: Docker build arguments in the format "ARG1=value1,ARG2=value2".
+      DOCKER_REGISTRY:
+        default: docker.io
+        type: string
+        description: The registry image repository.
+    secrets:
+      DOCKER_USERNAME:
+        required: true
+        description: The docker hub user name.
+      DOCKER_TOKEN:
+        required: true
+        description: The docker hub PAT token.
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Versioning
+      - uses: rmeneely/git-next-version@v1
+        with:
+          tag_pattern: 'v[0-9]*.[0-9]*.[0-9]*'
+          increment: 'patch'
+          auto_increment: 'true'
+          remove_prefix: 'true'
+
+      - name: Print the version
+        run: echo ${{ env.NEXT_VERSION }}
+
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org/'
+
+      - run: npm install --force
+
+      - name: Build and Pack
+        run: |
+          export NODE_OPTIONS="--max_old_space_size=4096"
+          npm run build
+
+      - name: Update version in package.json
+        run: |
+          cd .out-bin
+          sed -i 's/"version": "0.0.1"/"version": "${{ env.NEXT_VERSION }}"/' package.json
+
+      # Create Release
+      - name: Create Release
+        id: create_release
+        if: ${{ env.Enable_Release == 'true' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEXT_VERSION }}
+          release_name: Release v${{ env.NEXT_VERSION }}
+          draft: false
+          prerelease: false
+
+      - name: Publish to npm
+        if: ${{ env.Enable_Release == 'true' }}
+        run: |
+          cd .out-bin
+          npm config set //registry.npmjs.org/:_authToken=$NODE_AUTH_TOKEN
+          npm config set scope "@drunk-pulumi"
+          npm publish --access public --no-git-checks
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
