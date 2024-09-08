@@ -58,7 +58,7 @@ jobs:
 
       # Ensure the project able to Package
       - name: Package
-        run: dotnet pack ${{ inputs.Project_Path }} --no-build --no-restore --configuration Release --output ${{ runner.WORKSPACE }}/nupkgs -p:PackageVersion=${{ steps.bump-semver.outputs.new_version }}
+        run: dotnet pack ${{ inputs.Project_Path }} --no-build --no-restore --configuration Release --output ${{ runner.WORKSPACE }}/nupkgs -p:PackageVersion=${{ env.NEXT_VERSION }}
       - name: List Package
         run: ls ${{ runner.WORKSPACE }}/nupkgs
 
@@ -84,8 +84,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
         with:
-          tag_name: ${{ steps.bump-semver.outputs.new_version }}
-          release_name: Release ${{ steps.bump-semver.outputs.new_version }}
+          tag_name: v${{ env.NEXT_VERSION }}
+          release_name: Release v${{ env.NEXT_VERSION }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
