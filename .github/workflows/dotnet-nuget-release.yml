@@ -34,7 +34,7 @@ jobs:
       - name: Ensure GitHub NuGet Source
         run: |
           dotnet nuget add source 'https://nuget.pkg.github.com/baoduy2412/index.json' \
-          -n github -u baoduy2412 -p ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text
+          -n github -u baoduy2412 -p ${{ secrets.PACKAGE_TOKEN }} --store-password-in-clear-text
 
       - name: Restore dependencies
         run: dotnet restore ${{ inputs.Project_Path }}
