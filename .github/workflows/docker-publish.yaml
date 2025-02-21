@@ -7,6 +7,11 @@ on:
         required: true
         type: string
         description: The location of the Dockerfile.
+      readmeFile:
+        required: false
+        type: string
+        default: ''
+        description: The location of the README.md.
       context:
         default: .
         type: string
@@ -84,3 +89,15 @@ jobs:
             --tag ${{ inputs.imageName }}:latest \
             --cache-from=${{ inputs.imageName }}:latest \
             --push --platform=${{ inputs.platforms }} $build_args
+
+      - name: push README to Dockerhub
+        if: inputs.readmeFile != ''
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASS: ${{ secrets.DOCKER_TOKEN }}
+        with:
+          destination_container_repo: ${{ inputs.imageName }}
+          provider: dockerhub
+          short_description: 'ReadMe'
+          readme_file: ${{ inputs.readmeFile }}
