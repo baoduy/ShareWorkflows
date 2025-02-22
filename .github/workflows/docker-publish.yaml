@@ -35,6 +35,10 @@ on:
         default: docker.io
         type: string
         description: The registry image repository.
+      dockerCacheEnabled:
+        default: true
+        type: boolean
+        description: Whether to enable docker cache.
     secrets:
       DOCKER_USERNAME:
         required: true
@@ -84,11 +88,18 @@ jobs:
             done
           fi
 
-          docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
-            --tag ${{ inputs.imageName }}:${{ inputs.version }} \
-            --tag ${{ inputs.imageName }}:latest \
-            #--cache-from=${{ inputs.imageName }}:latest \
-            --push --platform=${{ inputs.platforms }} $build_args
+          if [ "${{ inputs.dockerCacheEnabled }}" = "true" ]; then
+            docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
+              --tag ${{ inputs.imageName }}:${{ inputs.version }} \
+              --tag ${{ inputs.imageName }}:latest \
+              --cache-from=${{ inputs.imageName }}:latest \
+              --push --platform=${{ inputs.platforms }} $build_args
+          else
+            docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
+              --tag ${{ inputs.imageName }}:${{ inputs.version }} \
+              --tag ${{ inputs.imageName }}:latest \
+              --push --platform=${{ inputs.platforms }} $build_args
+          fi
 
       - name: push README to Dockerhub
         if: inputs.readmeFile != ''
