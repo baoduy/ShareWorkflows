@@ -87,7 +87,7 @@ jobs:
           docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
             --tag ${{ inputs.imageName }}:${{ inputs.version }} \
             --tag ${{ inputs.imageName }}:latest \
-            --cache-from=${{ inputs.imageName }}:latest \
+            #--cache-from=${{ inputs.imageName }}:latest \
             --push --platform=${{ inputs.platforms }} $build_args
 
       - name: push README to Dockerhub
