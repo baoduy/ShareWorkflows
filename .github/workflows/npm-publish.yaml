@@ -2,41 +2,6 @@ name: npm-publish
 
 on:
   workflow_call:
-    inputs:
-      dockerFile:
-        required: true
-        type: string
-        description: The location of the Dockerfile.
-      context:
-        default: .
-        type: string
-        description: The context path of the project.
-      platforms:
-        default: linux/arm64,linux/amd64
-        type: string
-        description: The docker platforms parameter with default value is "linux/arm64 and linux/amd64".
-      imageName:
-        required: true
-        type: string
-        description: The name of the docker image.
-      version:
-        default: $(date +%s)
-        type: string
-        description: The version of the image with default value is current date-time.
-      buildArgs:
-        type: string
-        description: Docker build arguments in the format "ARG1=value1,ARG2=value2".
-      DOCKER_REGISTRY:
-        default: docker.io
-        type: string
-        description: The registry image repository.
-    secrets:
-      DOCKER_USERNAME:
-        required: true
-        description: The docker hub user name.
-      DOCKER_TOKEN:
-        required: true
-        description: The docker hub PAT token.
 
 jobs:
   build:

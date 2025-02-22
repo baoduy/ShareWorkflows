@@ -82,20 +82,10 @@ This workflow builds and publishes NPM packages with automatic versioning.
 ##### Input Parameters
 | Parameter | Description | Required | Default Value |
 |-----------|-------------|----------|---------------|
-| dockerFile | The location of the Dockerfile | Yes | - |
-| imageName | The name of the docker image | Yes | - |
-| context | The context path of the project | No | . |
-| platforms | The docker platforms parameter | No | linux/arm64,linux/amd64 |
-| version | The version of the image | No | $(date +%s) |
-| buildArgs | Docker build arguments (format: ARG1=value1,ARG2=value2) | No | - |
-| DOCKER_REGISTRY | The registry image repository | No | docker.io |
 
 ##### Secret Parameters
 | Secret | Description | Required |
 |--------|-------------|----------|
-| DOCKER_USERNAME | The docker hub user name | Yes |
-| DOCKER_TOKEN | The docker hub PAT token | Yes |
-| NPM_TOKEN | NPM authentication token | Yes |
 
 #### Usage Example:
 ```yaml
