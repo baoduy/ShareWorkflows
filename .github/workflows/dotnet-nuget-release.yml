@@ -67,7 +67,7 @@ jobs:
         run: ls ${{ runner.WORKSPACE }}/nupkgs
 
       - name: Zip Release
-        if: ${{ inputs.Enable_Release == 'true' }}
+        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
         uses: TheDoctor0/zip-release@0.6.2
         with:
           # Filename for archive
@@ -83,7 +83,7 @@ jobs:
       # Create Release
       - name: Create Release
         id: create_release
-        if: ${{ inputs.Enable_Release == 'true' }}
+        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
@@ -94,7 +94,7 @@ jobs:
           prerelease: false
       - name: Upload Release Asset
         id: upload-release-asset
-        if: ${{ inputs.Enable_Release == 'true' }}
+        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
