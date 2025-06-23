@@ -32,7 +32,7 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: ${{ inputs.Dotnet_Version }}
-          global-json-file: global.json
+          #global-json-file: global.json
 
       # Build
       - name: Ensure GitHub NuGet Source
