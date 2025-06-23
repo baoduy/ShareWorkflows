@@ -46,7 +46,7 @@ jobs:
         run: dotnet build ${{ inputs.Project_Path }} --no-restore --configuration Release
       - name: Test
         continue-on-error: true
-        if: ${{ inputs.Enable_Release != 'true' }}
+        if: ${{ inputs.Enable_Release != 'true' && inputs.Enable_Nuget_Release != 'true' }}
         run: dotnet test ${{ inputs.Project_Path }} --collect "Code Coverage" --verbosity normal
 
       # Versioning
