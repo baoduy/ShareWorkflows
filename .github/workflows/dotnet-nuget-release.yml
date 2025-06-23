@@ -12,6 +12,10 @@ on:
       Enable_Nuget_Release:
         required: false
         type: string
+      Dotnet_Version:
+        required: false
+        type: string
+        default: 9.x
     secrets:
       PACKAGE_TOKEN:
         required: true
@@ -27,7 +31,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-          #dotnet-version: 9.x
+          dotnet-version: ${{ inputs.Dotnet_Version }}
           global-json-file: global.json
 
       # Build
