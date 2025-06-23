@@ -9,9 +9,11 @@ on:
       Enable_Release:
         required: false
         type: string
+        default: false
       Enable_Nuget_Release:
         required: false
         type: string
+        default: false
       Dotnet_Version:
         required: false
         type: string
