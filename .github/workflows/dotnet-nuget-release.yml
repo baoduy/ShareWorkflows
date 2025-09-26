@@ -29,9 +29,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v5.0.0
+        #https://github.com/actions/setup-dotnet
       - name: Setup .NET
-        uses: actions/setup-dotnet@v2
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: ${{ inputs.Dotnet_Version }}
           #global-json-file: global.json
@@ -70,7 +71,7 @@ jobs:
 
       - name: Zip Release
         if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: TheDoctor0/zip-release@0.6.2
+        uses: thedoctor0/zip-release@0.7.5
         with:
           # Filename for archive
           filename: release.zip
@@ -86,7 +87,7 @@ jobs:
       - name: Create Release
         id: create_release
         if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: actions/create-release@v1
+        uses: actions/create-release@v5
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
         with:
@@ -94,10 +95,11 @@ jobs:
           release_name: Release v${{ env.NEXT_VERSION }}
           draft: false
           prerelease: false
+          
       - name: Upload Release Asset
         id: upload-release-asset
         if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: actions/upload-release-asset@v1
+        uses: actions/upload-release-asset@v5
         env:
           GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
         with:
