@@ -86,7 +86,7 @@ jobs:
       # Create Release
       - name: Release
         uses: softprops/action-gh-release@v2
-        if: ${{ inputs.Enable_Release == 'true' }}
+        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true' }}
         with:
           generate_release_notes: true
           make_latest: true
