@@ -84,29 +84,15 @@ jobs:
         run: dotnet nuget push ${{ runner.WORKSPACE }}/nupkgs/*.nupkg --skip-duplicate --source github --api-key ${{ secrets.PACKAGE_TOKEN }}
 
       # Create Release
-      - name: Create Release
-        id: create_release
-        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: actions/create-release@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: ${{ inputs.Enable_Release == 'true' }}
+        cocontinue-on-error: true
         with:
-          tag_name: v${{ env.NEXT_VERSION }}
-          release_name: Release v${{ env.NEXT_VERSION }}
-          draft: false
-          prerelease: false
-          
-      - name: Upload Release Asset
-        id: upload-release-asset
-        if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ runner.WORKSPACE }}/nupkgs/release.zip
-          asset_name: release.zip
-          asset_content_type: application/zip
+          generate_release_notes: true
+          make_latest: true
+          files: ${{ runner.WORKSPACE }}/nupkgs/release.zip
+          token: ${{ secrets.PACKAGE_TOKEN }}
 
       # Publish to NUGET.ORG
       - name: Publish Nuget
