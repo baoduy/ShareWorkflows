@@ -92,6 +92,7 @@ jobs:
           make_latest: true
           files: ${{ runner.WORKSPACE }}/nupkgs/release.zip
           token: ${{ secrets.PACKAGE_TOKEN }}
+          tag_name: ${{ env.NEXT_VERSION }}
 
       # Publish to NUGET.ORG
       - name: Publish Nuget
