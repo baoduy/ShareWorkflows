@@ -32,9 +32,10 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          fetch-tags: true
         #https://github.com/actions/setup-dotnet
 
       # Git Automatic Semantic Versioning
