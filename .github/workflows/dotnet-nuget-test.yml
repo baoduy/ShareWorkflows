@@ -39,19 +39,6 @@ jobs:
           fetch-tags: true
         #https://github.com/actions/setup-dotnet
 
-      # Git Automatic Semantic Versioning
-      - name: Git Automatic Semantic Versioning
-        id: auto-semver
-        uses: devmasx/auto-semver@latest
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          semver: MINOR
-
-      - name: Log Semantic Version
-        run: |
-          echo "Generated Version: ${{ steps.auto-semver.outputs.version }}"
-          echo "Version Tag: ${{ steps.auto-semver.outputs.tag }}"
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
         with:
