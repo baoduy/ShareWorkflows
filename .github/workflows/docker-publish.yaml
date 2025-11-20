@@ -60,19 +60,6 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      # Semantic Versioning
-      - name: Git Automatic Semantic Versioning
-        id: auto-semver
-        uses: devmasx/auto-semver@latest
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          semver: MINOR
-
-      - name: Log Semantic Version
-        run: |
-          echo "Generated Version: ${{ steps.auto-semver.outputs.version }}"
-          echo "Version Tag: ${{ steps.auto-semver.outputs.tag }}"
-
       # Build Docker
       - name: Docker Setup Buildx
         uses: docker/setup-buildx-action@v3.9.0
