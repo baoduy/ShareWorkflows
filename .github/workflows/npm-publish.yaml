@@ -16,19 +16,6 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      # Git Automatic Semantic Versioning
-      - name: Git Automatic Semantic Versioning
-        id: auto-semver
-        uses: devmasx/auto-semver@latest
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          semver: MINOR
-
-      - name: Log Semantic Version
-        run: |
-          echo "Generated Version: ${{ steps.auto-semver.outputs.version }}"
-          echo "Version Tag: ${{ steps.auto-semver.outputs.tag }}"
-
       # Versioning
       - name: Calculate version
         id: version
