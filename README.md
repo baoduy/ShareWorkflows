@@ -53,6 +53,7 @@ This workflow builds, tests, and publishes .NET packages to both GitHub Packages
 | Project_Path | The path to the .NET project file | Yes | - |
 | Enable_Release | Enable GitHub release creation | No | - |
 | Enable_Nuget_Release | Enable publishing to NuGet.org | No | - |
+| Dotnet_Version | The .NET version to use | No | 9.x |
 
 ##### Secret Parameters
 | Secret | Description | Required |
@@ -73,6 +74,53 @@ jobs:
       PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
       NUGET_PACKAGE_TOKEN: ${{ secrets.NUGET_PACKAGE_TOKEN }}
 ```
+
+### 2a. .NET NuGet Test
+This workflow is designed for testing .NET projects without publishing. It builds, tests, and packages projects to validate the workflow and packaging steps.
+
+#### Parameters
+
+##### Input Parameters
+| Parameter | Description | Required | Default Value |
+|-----------|-------------|----------|---------------|
+| Project_Path | The path to the .NET project file | Yes | - |
+| Dotnet_Version | The .NET version to use | No | 9.x |
+
+##### Secret Parameters
+| Secret | Description | Required |
+|--------|-------------|----------|
+| PACKAGE_TOKEN | GitHub packages token (for accessing private packages) | No |
+
+#### Usage Example:
+```yaml
+jobs:
+  nuget-test:
+    uses: your-org/ShareWorkflows/.github/workflows/dotnet-nuget-test.yml@main
+    with:
+      Project_Path: ./src/MyProject/MyProject.csproj
+      Dotnet_Version: 9.x
+```
+
+Or manually trigger via workflow_dispatch:
+```yaml
+name: Test .NET Package
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    uses: your-org/ShareWorkflows/.github/workflows/dotnet-nuget-test.yml@main
+    with:
+      Project_Path: ./src/MyProject/MyProject.csproj
+```
+
+#### Features
+- Builds and tests .NET projects
+- Generates version numbers using semantic versioning
+- Creates NuGet packages without publishing
+- Uploads test packages as artifacts (7-day retention)
+- No automated releases or publishing to registries
+- Can be manually triggered for testing purposes
 
 ### 3. NPM Package Publish
 This workflow builds and publishes NPM packages with automatic versioning.
@@ -118,6 +166,14 @@ jobs:
 - Automated release creation
 - Code coverage collection
 - Package version management
+
+### .NET NuGet Test
+- Testing-only workflow without publishing
+- Automatic versioning using git tags
+- Code coverage collection
+- Package validation
+- Artifact upload for review
+- Manual workflow dispatch support
 
 ### NPM Package Publish
 - Automatic versioning using git tags
