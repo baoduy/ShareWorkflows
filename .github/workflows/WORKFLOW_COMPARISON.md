@@ -8,13 +8,13 @@ This document compares the `.NET nuget release` workflow with the `.NET nuget te
 | Feature | dotnet-nuget-release.yml | dotnet-nuget-test.yml |
 |---------|-------------------------|----------------------|
 | **Purpose** | Production releases | Testing and validation |
-| **Trigger** | `workflow_call` | `workflow_call` + `workflow_dispatch` |
+| **Trigger** | `workflow_call` | `push` (release/prd), `workflow_call`, `workflow_dispatch` |
 | **Publishing** | ✅ GitHub Packages, NuGet.org | ❌ No publishing |
 | **Release Creation** | ✅ Optional | ❌ Disabled |
 | **Package Output** | Workspace (`runner.WORKSPACE`) | Temp dir (`runner.temp`) |
 | **Artifact Upload** | ❌ No | ✅ Yes (7-day retention) |
 | **Permissions** | `write` (contents, packages) | `read` (contents, packages) |
-| **Required Secrets** | PACKAGE_TOKEN, NUGET_PACKAGE_TOKEN | PACKAGE_TOKEN (optional) |
+| **Required Secrets** | PACKAGE_TOKEN, NUGET_PACKAGE_TOKEN | None |
 
 ## Detailed Comparison
 
@@ -34,6 +34,9 @@ on:
 #### Test Workflow
 ```yaml
 on:
+  push:
+    branches:
+      - 'release/prd'
   workflow_dispatch:
     inputs:
       Project_Path: ...
@@ -41,6 +44,7 @@ on:
     inputs:
       Project_Path: ...
 ```
+- Automatically runs when PR merged to release/prd branch
 - Callable from other workflows
 - Can be manually triggered from GitHub UI
 - Simpler input parameters (no release flags)
@@ -138,13 +142,12 @@ permissions:
 #### Test Workflow
 ```yaml
 - name: Ensure GitHub NuGet Source
-  if: ${{ secrets.PACKAGE_TOKEN != '' }}
   run: |
     dotnet nuget add source ... -p ${{ secrets.GITHUB_TOKEN }}
 ```
-- Conditionally configured
-- Only if PACKAGE_TOKEN is provided
-- Useful for private package dependencies
+- Always configured
+- Uses GITHUB_TOKEN (automatically available)
+- Allows access to private packages in the same organization
 
 ## Use Cases
 

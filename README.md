@@ -86,11 +86,6 @@ This workflow is designed for testing .NET projects without publishing. It build
 | Project_Path | The path to the .NET project file | Yes | - |
 | Dotnet_Version | The .NET version to use | No | 9.x |
 
-##### Secret Parameters
-| Secret | Description | Required |
-|--------|-------------|----------|
-| PACKAGE_TOKEN | GitHub packages token (for accessing private packages) | No |
-
 #### Usage Example:
 ```yaml
 jobs:
@@ -101,17 +96,22 @@ jobs:
       Dotnet_Version: 9.x
 ```
 
-Or manually trigger via workflow_dispatch:
+Or create a workflow in your repository that can be manually triggered:
 ```yaml
 name: Test .NET Package
 on:
   workflow_dispatch:
+    inputs:
+      Project_Path:
+        description: 'Path to .NET project file'
+        required: true
+        default: './src/MyProject/MyProject.csproj'
 
 jobs:
   test:
     uses: your-org/ShareWorkflows/.github/workflows/dotnet-nuget-test.yml@main
     with:
-      Project_Path: ./src/MyProject/MyProject.csproj
+      Project_Path: ${{ inputs.Project_Path }}
 ```
 
 #### Features
