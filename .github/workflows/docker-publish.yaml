@@ -10,7 +10,7 @@ on:
       readmeFile:
         required: false
         type: string
-        default: ''
+        default: ""
         description: The location of the README.md.
       context:
         default: .
@@ -24,10 +24,6 @@ on:
         required: true
         type: string
         description: The name of the docker image.
-      version:
-        default: $(date +%s)
-        type: string
-        description: The version of the image with default value is current date-time.
       buildArgs:
         type: string
         description: Docker build arguments in the format "ARG1=value1,ARG2=value2".
@@ -59,6 +55,24 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+
+      # Versioning
+      - name: Calculate version
+        id: version
+        uses: paulhatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          version_format: "${major}.${minor}.${patch}"
+          bump_each_commit: false
+          search_commit_body: false
+
+      - name: Set NEXT_VERSION
+        run: echo "NEXT_VERSION=${{ steps.version.outputs.version }}" >> $GITHUB_ENV
+
+      - name: Print the version
+        run: echo ${{ steps.version.outputs.version }}
 
       # Build Docker
       - name: Docker Setup Buildx
@@ -96,13 +110,13 @@ jobs:
 
           if [ "${{ inputs.dockerCacheEnabled }}" = "true" ]; then
             docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
-              --tag ${{ inputs.imageName }}:${{ inputs.version }} \
+              --tag ${{ inputs.imageName }}:${{ env.NEXT_VERSION }} \
               --tag ${{ inputs.imageName }}:latest \
               --cache-from=${{ inputs.imageName }}:latest \
               --push --platform=${{ inputs.platforms }} $build_args
           else
             docker buildx build ${{ inputs.context }} --file ${{ inputs.dockerFile }} \
-              --tag ${{ inputs.imageName }}:${{ inputs.version }} \
+              --tag ${{ inputs.imageName }}:${{ env.NEXT_VERSION }} \
               --tag ${{ inputs.imageName }}:latest \
               --push --platform=${{ inputs.platforms }} $build_args
           fi
@@ -116,5 +130,18 @@ jobs:
         with:
           destination_container_repo: ${{ inputs.imageName }}
           provider: dockerhub
-          short_description: 'ReadMe'
+          short_description: "ReadMe"
           readme_file: ${{ inputs.readmeFile }}
+
+      # Create Release
+      - name: Create Release
+        id: create_release
+        if: ${{ env.Enable_Release == 'true' }}
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.NEXT_VERSION }}
+          release_name: Release v${{ env.NEXT_VERSION }}
+          draft: false
+          prerelease: false
