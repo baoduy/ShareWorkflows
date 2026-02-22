@@ -123,6 +123,7 @@ jobs:
 
       - name: push README to Dockerhub
         if: inputs.readmeFile != ''
+        continue-on-error: true
         uses: christian-korneck/update-container-description-action@v1
         env:
           DOCKER_USER: ${{ secrets.DOCKER_USERNAME }}
@@ -136,7 +137,7 @@ jobs:
       # Create Release
       - name: Create Release
         id: create_release
-        if: ${{ env.Enable_Release == 'true' }}
+        continue-on-error: true
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
