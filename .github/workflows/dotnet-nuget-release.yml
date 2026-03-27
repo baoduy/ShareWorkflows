@@ -106,8 +106,9 @@ jobs:
           generate_release_notes: true
           make_latest: true
           files: ${{ runner.WORKSPACE }}/nupkgs/release.zip
-          token: ${{ secrets.PACKAGE_TOKEN }}
           tag_name: v${{ env.NEXT_VERSION }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       # Publish to NUGET.ORG
       - name: Publish Nuget
