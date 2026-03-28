@@ -39,7 +39,7 @@ jobs:
         #https://github.com/actions/setup-dotnet
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v5
+        uses: actions/setup-dotnet@v5.2.0
         with:
           dotnet-version: ${{ inputs.Dotnet_Version }}
           #global-json-file: global.json
@@ -62,7 +62,7 @@ jobs:
       # Versioning
       - name: Calculate version
         id: version
-        uses: paulhatch/semantic-version@v5.4.0
+        uses: paulhatch/semantic-version@v6.0.2
         with:
           tag_prefix: "v"
           major_pattern: "(MAJOR)"
@@ -85,7 +85,7 @@ jobs:
 
       - name: Zip Release
         if: ${{ inputs.Enable_Release == 'true' || inputs.Enable_Nuget_Release == 'true'}}
-        uses: thedoctor0/zip-release@0.7.5
+        uses: thedoctor0/zip-release@0.7.6
         with:
           # Filename for archive
           filename: release.zip
